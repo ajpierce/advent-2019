@@ -46,16 +46,16 @@ This is pretty slow for what this program does.  But the above command will comp
 Compiling our solution to a jar means that the time it takes to run no longer includes the time to compile the code:
 
 ```
-$ lein do clean, uberjar advent-2019.day01
+$ lein do clean, with-profile day01 uberjar
 
 Compiling advent-2019.core
 Compiling advent-2019.day01
-Created /home/andrew/code/advent-2019/target/advent-2019-0.1.0-SNAPSHOT.jar
-Created /home/andrew/code/advent-2019/target/advent-2019-0.1.0-SNAPSHOT-standalone.jar
+Created /[...]/advent-2019/target/advent2019-0.1.0-SNAPSHOT.jar
+Created /[...]/advent-2019/target/advent2019-day01.jar
 ```
 
 ```
-$ time java -jar ./target/advent-2019-0.1.0-SNAPSHOT-standalone.jar
+$ time java -jar ./target/advent2019-day01.jar
 Day 01, Part 1: 3337766
 Day 01, Part 2: 5003788
 
@@ -65,9 +65,7 @@ real    0m0.519s
 
 You can see we've shaved about 1 second off, reducing our execution time by about ~67%.
 
-But we can do better.
-
-We need _more speed._
+But we can do better. We need _more speed._
 
 ## Running SO FAST
 

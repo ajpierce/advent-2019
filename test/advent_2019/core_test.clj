@@ -2,6 +2,15 @@
   (:require [clojure.test :refer :all]
             [advent-2019.core :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(deftest get-input-tests
+  (testing "get-input function"
+    (testing "without integer parsing"
+      (let [input (get-input "test.txt")]
+        (is (= "12345" (first input)))
+        (is (= "01234" (second input)))
+        (is (= "This is not an integer lol" (last input)))))
+    (testing "with integer parsing"
+      (let [input (get-input "test.txt" true)]
+        (is (= 12345 (first input)))
+        (is (= 1234 (second input)))
+        (is (= nil (last input)))))))

@@ -1,4 +1,5 @@
 (ns advent-2019.day01
+  (:gen-class)
   (:require [advent-2019.core :refer [get-input]]))
 
 (defn calc-fuel

@@ -113,9 +113,45 @@ real    0m0.004s
 
 Our program is now **two whole orders of magnitude** faster than running a JAR on the JVM.  When compared with running our program using `lein run`, it is **39,275% faster.**
 
+### Memory Utilization
+Instead of making vague hand-wavy claims about memory utilization, let's run the numbers using `/usr/bin/time -v`, which is different than BASH `time`. We are interested in the "Maximum resident set size", but I have included the other timing again because it's just so _interesting._
+
+
+```
+# JAVA
+$ /usr/bin/time -v java -jar ./target/advent2019-day01.jar
+  ...
+  Command being timed: "java -jar ./target/advent2019-day01.jar"
+  User time (seconds): 1.41
+  System time (seconds): 0.21
+  Percent of CPU this job got: 263%
+  ...
+  Maximum resident set size (kbytes): 319272
+  ...
+
+# BARE METAL
+```
+$ /usr/bin/time -v ./target/day01
+  Command being timed: "./target/day01"
+  User time (seconds): 0.00
+  System time (seconds): 0.00
+  Percent of CPU this job got: 33%
+  ...
+  Maximum resident set size (kbytes): 9916
+  ...
+```
+
+Looks like we have a one-two-three punch when it comes to bare metal performance:
+
++ One OOM better CPU utilization
++ Two OOM better Memory utilization
++ Three OOM better real time elapsed
+
 ![Gotta go Fast](https://i.kym-cdn.com/photos/images/original/000/506/223/2ab.gif)
+
 _I cannot take [credit](https://knowyourmeme.com/memes/gotta-go-fast) for this image._
 
+## Conclusion
 Instead of solving fun adventofcode puzzles, we spent the first third of Advent proving that there's no compelling reason to NOT use Clojure in production:
 
 + It is faster to develop software using Clojure

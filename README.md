@@ -120,25 +120,25 @@ Instead of making vague hand-wavy claims about memory utilization, let's run the
 ```
 # JAVA
 $ /usr/bin/time -v java -jar ./target/advent2019-day01.jar
-  ...
-  Command being timed: "java -jar ./target/advent2019-day01.jar"
-  User time (seconds): 1.41
-  System time (seconds): 0.21
-  Percent of CPU this job got: 263%
-  ...
-  Maximum resident set size (kbytes): 319272
+    ...
+    Command being timed: "java -jar ./target/advent2019-day01.jar"
+    User time (seconds): 1.41
+    System time (seconds): 0.21
+    Percent of CPU this job got: 263%
+    ...
+    Maximum resident set size (kbytes): 319272
   ...
 
 # BARE METAL
-```
 $ /usr/bin/time -v ./target/day01
-  Command being timed: "./target/day01"
-  User time (seconds): 0.00
-  System time (seconds): 0.00
-  Percent of CPU this job got: 33%
-  ...
-  Maximum resident set size (kbytes): 9916
-  ...
+    ...
+    Command being timed: "./target/day01"
+    User time (seconds): 0.00
+    System time (seconds): 0.00
+    Percent of CPU this job got: 33%
+    ...
+    Maximum resident set size (kbytes): 9916
+    ...
 ```
 
 Looks like we have a one-two-three punch when it comes to bare metal performance:

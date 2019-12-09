@@ -4,4 +4,8 @@
   :license {:name "MIT"
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.10.0"]]
+  :profiles {:uberjar {:aot :all}
+             :day01 {:main advent-2019.day01
+                     :uberjar-name "advent2019-day01.jar"
+                     :aot :all}}
   :repl-options {:init-ns advent-2019.core})

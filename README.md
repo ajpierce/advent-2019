@@ -91,17 +91,36 @@ $ lein do clean, with-profile day01 uberjar
 $ native-image --report-unsupported-elements-at-runtime --initialize-at-build-time -jar ./target/advent2019-day01.jar -H:Name=./target/day01
 ```
 
-**We're on the metal now.** Our executable is rather large compared with the JAR:
+**We're on the metal now.** Our executable is over twice as large as the original JAR:
 ```
-$ du -sh ./target
-  4.9M ./target/advent2019-day01.jar
-  10M  ./target/day01
+$ du -sh ./target/*
+4.9M ./target/advent2019-day01.jar
+10M  ./target/day01
 ```
 
-...but it contains all of the Java and Clojure we need to run our program in addition to our program without the JVM. Large binaries are the tradeoff we make for superior performance and lower memory utilization.
+...but it contains all of the Java and Clojure we need to run our program (in addition to the program itself) without use of the JVM. Large binaries are the tradeoff we make for superior performance and memory utilization.
 
-**It is time.** We will measure the speed:
+**It is time.** We measure the speed:
 
 ```
-TODO: Run on home PC for consistent metrics
+$ time ./target/day01
+Day 01, Part 1: 3337766
+Day 01, Part 2: 5003788
+
+real    0m0.004s
+...
 ```
+
+Our program is now **two whole orders of magnitude** faster than running a JAR on the JVM.  When compared with running our program using `lein run`, it is **39,275% faster.**
+
+![Gotta go Fast](https://i.kym-cdn.com/photos/images/original/000/506/223/2ab.gif)
+_I cannot take [credit](https://knowyourmeme.com/memes/gotta-go-fast) for this image._
+
+Instead of solving fun adventofcode puzzles, we spent the first third of Advent proving that there's no compelling reason to NOT use Clojure in production:
+
++ It is faster to develop software using Clojure
++ It is faster and more memory-efficient to run (compiled) Clojure than running JARs on the JVM
++ Clojure suffers from far less entropy and churn than the JavaScript ecosystem, which further reduces maintenance cost
+- But, like our large binary sizes, there's a high upfront cost to learning Clojure
+
+But, just like Santa and his elves, Clojure is _fun_ and _magical!_ I do hope you consider taking the plunge!

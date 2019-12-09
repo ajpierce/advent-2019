@@ -67,6 +67,41 @@ You can see we've shaved about 1 second off, reducing our execution time by abou
 
 But we can do better. We need _more speed._
 
-## Running SO FAST
+## Running ON METAL
 
-Stay tuned for some GraalVM magic.
+There's quite a bit of overhead involved with running the JVM to execute your Java bytecode. But don't worry! There's a lot of good work being done with the [GraalVM](https://www.graalvm.org/docs/why-graal/) to compile Java bytecode down to machine code.
+
+We can run this on "the metal." We can go _fast._
+
+First, follow [BrunoBonacci's excellent instructions](https://github.com/BrunoBonacci/graalvm-clojure/blob/master/doc/clojure-graalvm-native-binary.md#step1---download-and-install-graalvm) to get GraalVM installed and on your path to replace your default Java installation.
+
+If GraalVM is installed correctly, you should see:
+
+```
+$ java -version
+openjdk version "11.0.5" 2019-10-15
+OpenJDK Runtime Environment (build 11.0.5+10-jvmci-19.3-b05-LTS)
+OpenJDK 64-Bit GraalVM CE 19.3.0 (build 11.0.5+10-jvmci-19.3-b05-LTS, mixed mode, sharing)
+```
+
+Then, we'll rebuild our JAR using GraalVM, and compile the new JAR down to machine code:
+
+```
+$ lein do clean, with-profile day01 uberjar
+$ native-image --report-unsupported-elements-at-runtime --initialize-at-build-time -jar ./target/advent2019-day01.jar -H:Name=./target/day01
+```
+
+**We're on the metal now.** Our executable is rather large compared with the JAR:
+```
+$ du -sh ./target
+  4.9M ./target/advent2019-day01.jar
+  10M  ./target/day01
+```
+
+...but it contains all of the Java and Clojure we need to run our program in addition to our program without the JVM. Large binaries are the tradeoff we make for superior performance and lower memory utilization.
+
+**It is time.** We will measure the speed:
+
+```
+TODO: Run on home PC for consistent metrics
+```

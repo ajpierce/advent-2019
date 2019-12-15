@@ -1,6 +1,6 @@
 (ns advent-2019.core-test
-  (:require [clojure.test :refer :all]
-            [advent-2019.core :refer :all]))
+  (:require [clojure.test :refer [deftest testing is]]
+            [advent-2019.core :refer [get-input]]))
 
 (deftest get-input-tests
   (testing "get-input function"

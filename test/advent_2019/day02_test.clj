@@ -1,6 +1,6 @@
 (ns advent-2019.day02-test
-  (:require [clojure.test :refer :all]
-            [advent-2019.day02 :refer :all]))
+  (:require [clojure.test :refer [deftest testing is]]
+            [advent-2019.day02 :refer [calc]]))
 
 (deftest day02part1
   (testing "Opcodes"

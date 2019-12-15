@@ -1,6 +1,7 @@
 (ns advent-2019.day03
   (:gen-class)
-  (:require [advent-2019.core :refer [get-input]]))
+  (:require [clojure.set :refer [intersection]]
+            [advent-2019.core :refer [get-input]]))
 
 (defn parse-segment
   ([segment] (parse-segment segment [0 0]))

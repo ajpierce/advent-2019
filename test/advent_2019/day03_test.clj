@@ -1,21 +1,21 @@
 (ns advent-2019.day03-test
-  (:require [clojure.test :refer :all]
-            [advent-2019.day03 :refer :all]))
+  (:require [clojure.test :refer [deftest testing is]]
+            [advent-2019.day03 :refer [parse-segment build-circuit part1]]))
 
 (deftest day03part1
   (testing "Segment Parsing"
     (testing "Going right"
-      (is (= '([1 0] [2 0] [3 0]) (parse-seg "R3")))
-      (is (= '([4 3] [5 3] [6 3]) (parse-seg "R3" [3 3]))))
+      (is (= '([1 0] [2 0] [3 0]) (parse-segment "R3")))
+      (is (= '([4 3] [5 3] [6 3]) (parse-segment "R3" [3 3]))))
     (testing "Going left"
-      (is (= '([-1 0] [-2 0] [-3 0]) (parse-seg "L3")))
-      (is (= '([2 3] [1 3] [0 3]) (parse-seg "L3" [3 3]))))
+      (is (= '([-1 0] [-2 0] [-3 0]) (parse-segment "L3")))
+      (is (= '([2 3] [1 3] [0 3]) (parse-segment "L3" [3 3]))))
     (testing "Going up"
-      (is (= '([0 1] [0 2] [0 3]) (parse-seg "U3")))
-      (is (= '([3 4] [3 5] [3 6]) (parse-seg "U3" [3 3]))))
+      (is (= '([0 1] [0 2] [0 3]) (parse-segment "U3")))
+      (is (= '([3 4] [3 5] [3 6]) (parse-segment "U3" [3 3]))))
     (testing "Going down"
-      (is (= '([0 -1] [0 -2] [0 -3]) (parse-seg "D3")))
-      (is (= '([3 2] [3 1] [3 0]) (parse-seg "D3" [3 3])))))
+      (is (= '([0 -1] [0 -2] [0 -3]) (parse-segment "D3")))
+      (is (= '([3 2] [3 1] [3 0]) (parse-segment "D3" [3 3])))))
   (testing "Circuit Building"
     (is (= #{[1 0] [2 0] [3 0] [4 0] [5 0]
              [6 0] [7 0] [8 0] [8 1] [8 2] [8 3]

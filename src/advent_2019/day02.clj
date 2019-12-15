@@ -4,7 +4,7 @@
 
 (defn calc [input]
   (loop [intcode input i 0]
-    (let [[opcode p1 p2 o & codes] (drop i intcode)
+    (let [[opcode p1 p2 o] (drop i intcode)
           op (case opcode 1 + 2 * nil)]
       (if op
         (recur (assoc intcode o (op (nth intcode p1) (nth intcode p2))) (+ i 4))

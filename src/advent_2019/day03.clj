@@ -17,11 +17,11 @@
      (vec (for [i (map inc (range length))]
             [(+ x (* dx i)) (+ y (* dy i))])))))
 
-(defn build-circuit [wire]
+(defn build-circuit [wire callback]
   (loop [circuit [[0 0]]
          remaining wire]
     (if (empty? remaining)
-      (into (sorted-set) (rest circuit))
+      (callback (rest circuit))
       (let [pos (last circuit)
             segment (first remaining)
             path (parse-segment segment pos)]
@@ -29,23 +29,27 @@
 
 (defn calc-manhattan [[x y]] (+ (Math/abs x) (Math/abs y)))
 
+(defn calc-circuit-size [circuit]
+  (->> (map vector circuit (iterate inc 1))
+       (reverse)
+       (into {})))
+
 (defn part1
   "To fix the circuit, you need to find the intersection point closest to the central port.
   What is the Manhattan distance from the central port to the closest intersection?"
   [[wire1 wire2]]
-  (let [c1 (build-circuit wire1)
-        c2 (build-circuit wire2)
-        intersections (clojure.set/intersection c1 c2)]
+  (let [post-processor #(into #{} %)
+        c1 (build-circuit wire1 post-processor)
+        c2 (build-circuit wire2 post-processor)
+        intersections (intersection c1 c2)]
     (apply min (map calc-manhattan intersections))))
 
 (defn part2
-  ""
-  [input]
-  input)
+  "What is the fewest combined steps the wires must take to reach an intersection?"
+  [[wire1 wire2]]
+  0)
 
 (defn -main []
   (let [input (map #(clojure.string/split % #",") (get-input "day03.txt"))]
     (println "Day 03, Part 1:" (part1 input))
     (println "Day 03, Part 2:" (part2 input))))
-
-(parse-seg "U5")

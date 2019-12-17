@@ -1,8 +1,8 @@
 (ns advent-2019.day03-test
   (:require [clojure.test :refer [deftest testing is]]
-            [advent-2019.day03 :refer [parse-segment build-circuit part1]]))
+            [advent-2019.day03 :refer [parse-segment build-circuit part1 part2 calc-circuit-size]]))
 
-(deftest day03part1
+(deftest day03tests
   (testing "Segment Parsing"
     (testing "Going right"
       (is (= '([1 0] [2 0] [3 0]) (parse-segment "R3")))

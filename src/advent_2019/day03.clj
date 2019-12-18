@@ -17,11 +17,11 @@
      (vec (for [i (map inc (range length))]
             [(+ x (* dx i)) (+ y (* dy i))])))))
 
-(defn build-circuit [wire callback]
+(defn build-circuit [wire]
   (loop [circuit [[0 0]]
          remaining wire]
     (if (empty? remaining)
-      (callback (rest circuit))
+      (rest circuit)
       (let [pos (last circuit)
             segment (first remaining)
             path (parse-segment segment pos)]
@@ -34,22 +34,46 @@
        (reverse)
        (into {})))
 
-(defn part1
+(defn calc-intersections [circuit1 circuit2]
+  (intersection (into #{} circuit1) (into #{} circuit2)))
+
+(defn solve-p1
   "To fix the circuit, you need to find the intersection point closest to the central port.
   What is the Manhattan distance from the central port to the closest intersection?"
+  [intersections]
+  (apply min (map calc-manhattan intersections)))
+
+(defn solve-p2
+  "What is the fewest combined steps the wires must take to reach an intersection?"
+  [c1 c2 intersections]
+  (let [s1 (calc-circuit-size c1)
+        s2 (calc-circuit-size c2)]
+    (->> intersections
+         (map (fn [i] (+ (get s1 i) (get s2 i))))
+         (apply min))))
+
+(defn part1
+  "Includes the circuit-building step before solving (for unit tests).
+   We omit this step in -main to avoid processing data twice"
   [[wire1 wire2]]
-  (let [post-processor #(into #{} %)
-        c1 (build-circuit wire1 post-processor)
-        c2 (build-circuit wire2 post-processor)
-        intersections (intersection c1 c2)]
-    (apply min (map calc-manhattan intersections))))
+  (let [c1 (build-circuit wire1)
+        c2 (build-circuit wire2)
+        intersections (calc-intersections c1 c2)]
+    (solve-p1 intersections)))
 
 (defn part2
-  "What is the fewest combined steps the wires must take to reach an intersection?"
+  "Includes the circuit-building step before solving (for unit tests).
+   We omit this step in -main to avoid processing data twice"
   [[wire1 wire2]]
-  0)
+  (let [c1 (build-circuit wire1)
+        c2 (build-circuit wire2)
+        intersections (calc-intersections c1 c2)]
+    (solve-p2 c1 c2 intersections)))
 
 (defn -main []
-  (let [input (map #(clojure.string/split % #",") (get-input "day03.txt"))]
-    (println "Day 03, Part 1:" (part1 input))
-    (println "Day 03, Part 2:" (part2 input))))
+  (let [[wire1 wire2] (map #(clojure.string/split % #",") (get-input "day03.txt"))
+        c1 (build-circuit wire1)
+        c2 (build-circuit wire2)
+        intersections (calc-intersections c1 c2)]
+    (println "Day 03, Part 1:" (solve-p1 intersections))
+    (println "Day 03, Part 2:" (solve-p2 c1 c2 intersections))))

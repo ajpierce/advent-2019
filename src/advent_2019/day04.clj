@@ -12,7 +12,8 @@
   (->> digits
        (partition-by identity)
        (filter (fn [x] (> (count x) 1)))
-       not-empty))
+       empty?
+       not))
 
 (defn valid-digits? [digits]
   (and (apply <= digits)
@@ -35,7 +36,8 @@
   (->> digits
        (partition-by identity)
        (filter (fn [x] (= (count x) 2)))
-       not-empty))
+       empty?
+       not))
 
 (defn valid-digits??
   "An Elf just remembered one more important detail:

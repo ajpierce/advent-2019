@@ -4,9 +4,11 @@
    [clojure.core.reducers :as r]
    [advent-2019.core :refer [get-input]]))
 
+(defn get-digit [^Character x] (Character/digit x 10))
+
 (defn get-digits
   "Transforms a string or a number into a list of individual digits"
-  [number] (map #(Character/digit % 10) (str number)))
+  [^Integer number] (map get-digit (str number)))
 
 (defn contains-repeat-digit? [digits]
   (->> digits

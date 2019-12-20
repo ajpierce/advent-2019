@@ -75,5 +75,5 @@
         c1 (build-circuit wire1)
         c2 (build-circuit wire2)
         intersections (calc-intersections c1 c2)]
-    (println "Day 03, Part 1:" (solve-p1 intersections))
-    (println "Day 03, Part 2:" (solve-p2 c1 c2 intersections))))
+    (time (println "Day 03, Part 1:" (solve-p1 intersections)))
+    (time (println "Day 03, Part 2:" (solve-p2 c1 c2 intersections)))))

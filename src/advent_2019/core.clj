@@ -2,11 +2,16 @@
 
 (defn parse-int-or-nil
   "Will attempt to parse a string as an Integer; will return nil if it fails"
-  [s]
+  [^String s]
   (try (Integer/parseInt s)
        (catch Exception e
          (str "Failed to parse int: " (.getMessage e))
          nil)))
+
+(defn parse-int
+  "Given a string, returns an integer representation"
+  [^String x]
+  (Integer/parseInt x))
 
 (defn get-input
   "Given the name of a file in the resources folder, parse it and return a vec of the lines in the file.

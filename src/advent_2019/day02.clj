@@ -1,17 +1,23 @@
 (ns advent-2019.day02
   (:gen-class)
-  (:require [advent-2019.core :refer [get-input]]))
+  (:require [advent-2019.core :refer [get-input parse-int]]))
 
 (defn calc [input]
   (loop [intcode input i 0]
     (let [[opcode p1 p2 o] (drop i intcode)
-          op (case opcode 1 + 2 * nil)]
+          op (case (int opcode)
+               1 +
+               2 *
+               nil)]
       (if op
         (recur (assoc intcode o (op (nth intcode p1) (nth intcode p2))) (+ i 4))
         intcode))))
 
-(defn program [input noun verb]
-  (-> input (assoc 1 noun 2 verb) calc first))
+(defn program [input ^Integer noun ^Integer verb]
+  (-> input
+      (assoc 1 noun 2 verb)
+      calc
+      first))
 
 (defn part1
   "[Take puzzle input and] replace position 1 with the value 12 and replace position 2 with the value 2.
@@ -32,6 +38,6 @@
 
 (defn -main []
   (let [raw-input (-> "day02.txt" get-input first (clojure.string/split #","))
-        input (->> raw-input (map read-string) vec)]
-    (println "Day 02, Part 1:" (part1 input))
-    (println "Day 02, Part 2:" (part2 input))))
+        input (->> raw-input (map parse-int) vec)]
+    (time (println "Day 02, Part 1:" (part1 input)))
+    (time (println "Day 02, Part 2:" (part2 input)))))

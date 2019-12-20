@@ -27,7 +27,7 @@
             path (parse-segment segment pos)]
         (recur (into circuit path) (rest remaining))))))
 
-(defn calc-manhattan [[x y]] (+ (Math/abs x) (Math/abs y)))
+(defn calc-manhattan [[^Integer x ^Integer y]] (+ (Math/abs x) (Math/abs y)))
 
 (defn calc-circuit-size [circuit]
   (->> (map vector circuit (iterate inc 1))

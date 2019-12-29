@@ -5,18 +5,21 @@
 (tufte/add-basic-println-handler!
  {:format-pstats-opts {:columns [:n-calls :p50 :p90 :mean :mad :clock :total]}})
 
-(defn parse-int-or-nil
-  "Will attempt to parse a string as an Integer; will return nil if it fails"
-  [^String s]
-  (try (Integer/parseInt s)
-       (catch Exception e
-         (str "Failed to parse int: " (.getMessage e))
-         nil)))
+(defn parse-int-safely
+  "Safely parse integer from a string. Return nil on error if no fallback defined"
+  ([^String s] (parse-int-safely nil s))
+  ([fallback ^String s]
+   (try (Integer/parseInt s)
+        (catch Exception e
+          (str "Failed to parse int: " (.getMessage e))
+          fallback))))
 
-(defn parse-int
-  "Given a string, returns an integer representation"
-  [^String x]
-  (Integer/parseInt x))
+(defn parse-int-or-nil
+  "DEPRECATED: use parse-int-safely instead"
+  [^String s]
+  (parse-int-safely s))
+
+(defn parse-int [^String x] (Integer/parseInt x))
 
 (defn get-input
   "Given the name of a file in the resources folder, parse it and return a vec of the lines in the file.

@@ -1,4 +1,9 @@
-(ns advent-2019.core)
+(ns advent-2019.core
+  (:require [taoensso.tufte :as tufte]))
+
+;; Set up profiling for the entire project
+(tufte/add-basic-println-handler!
+ {:format-pstats-opts {:columns [:n-calls :p50 :p90 :mean :mad :clock :total]}})
 
 (defn parse-int-or-nil
   "Will attempt to parse a string as an Integer; will return nil if it fails"

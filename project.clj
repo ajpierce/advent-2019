@@ -3,7 +3,8 @@
   :url "https://github.com/ajpierce/advent-2019"
   :license {:name "MIT"
             :url "https://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojure "1.10.1"]]
+  :dependencies [[org.clojure/clojure "1.10.1"]
+                 [com.taoensso/tufte "2.1.0"]]
   :global-vars {*warn-on-reflection* true}
   :profiles {:uberjar {:aot :all}
              :day01 {:main advent-2019.day01

@@ -1,6 +1,6 @@
 (ns advent-2019.day05-test
   (:require [clojure.test :refer [deftest testing is]]
-            [advent-2019.day05 :refer [calc parse-instruction]]))
+            [advent-2019.day05 :refer [calc parse-instruction run]]))
 
 (deftest day05
   (testing "instruction parsing"

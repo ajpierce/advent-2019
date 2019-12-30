@@ -65,21 +65,30 @@
                               outputs)]
            [next-prog next-idx next-outputs])))))
 
+(defn run
+  "Executes the program until a stop code (99) is reached.
+  Returns the last value on the output stack"
+  ([initial-program]
+   (run 1))
+  ([initial-program input]
+   (loop [program initial-program
+          idx 0
+          outputs []]
+     (let [[p i o] (calc program idx outputs input)]
+       (if p
+         (recur p i o)
+         (last o))))))
+
 (defn part1
   "After providing 1 to the only input instruction and passing all the tests,
   what diagnostic code does the program produce?"
-  [initial-program]
-  (loop [program initial-program
-         idx 0
-         outputs []]
-    (let [[p i o] (calc program idx outputs)]
-      (if p
-        (recur p (+ idx i) o)
-        (last o)))))
+  [input] (run input 1))
 
-(defn part2 [input] nil)
+(defn part2
+  "What is the diagnostic code for system ID 5?"
+  [input] (run input 5))
 
 (defn -main []
   (let [input (->> "day05.txt" get-input first (#(clojure.string/split % #",")) vec)]
     (time (println "Day 05, Part 1:" (part1 input)))
-    #_(time (println "Day 05, Part 2:" (part2 input)))))
+    (time (println "Day 05, Part 2:" (part2 input)))))

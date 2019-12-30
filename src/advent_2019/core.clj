@@ -11,7 +11,7 @@
   ([fallback ^String s]
    (try (Integer/parseInt s)
         (catch Exception e
-          (str "Failed to parse int: " (.getMessage e))
+          (println "Failed to parse int: " (.getMessage e))
           fallback))))
 
 (defn parse-int-or-nil
@@ -19,7 +19,12 @@
   [^String s]
   (parse-int-safely s))
 
-(defn parse-int [^String x] (Integer/parseInt x))
+(defn parse-int [x]
+  (try (Integer/parseInt x)
+       (catch ClassCastException _ x)
+       (catch Exception e
+         (println "Failed to parse integer" (.getMessage e))
+         nil)))
 
 (defn get-input
   "Given the name of a file in the resources folder, parse it and return a vec of the lines in the file.

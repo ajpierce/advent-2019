@@ -18,5 +18,8 @@
                      :aot :all}
              :day04 {:main advent-2019.day04
                      :uberjar-name "advent2019-day04.jar"
+                     :aot :all}
+             :day05 {:main advent-2019.day05
+                     :uberjar-name "advent2019-day05.jar"
                      :aot :all}}
   :repl-options {:init-ns advent-2019.core})

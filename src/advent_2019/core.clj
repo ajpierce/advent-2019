@@ -42,3 +42,10 @@
      (if parseInt?
        (map parse-int-or-nil raw-input)
        raw-input))))
+
+(defn print->
+  "Takes (an optional message and) x, prints, then returns x"
+  ([x]
+   (print-> "" x))
+  ([msg x]
+   (println msg x) x))

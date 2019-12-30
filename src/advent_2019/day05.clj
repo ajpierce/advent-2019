@@ -36,17 +36,19 @@
 
 (defn calc
   "Read the instruction at index idx. Perform the instruction.
-  Return a vector of [new-program, new-index]"
+  Return a vector of [next-program, next-index, next-outputs] if incomplete,
+  or the outputs if complete."
   ([program]
-   (calc program 0 1))
+   (calc program 0 [] 1))
   ([program idx]
-   (calc program idx 1))
-  ([program idx input]
+   (calc program idx [] 1))
+  ([program idx outputs]
+   (calc program idx outputs 1))
+  ([program idx outputs input]
    (let [instruction (first (drop idx program))
          [opcode modes] (parse-instruction instruction)]
-     (if (= "99" opcode) nil
-         (let [params (->> program
-                           (drop (inc idx))
+     (if (= "99" opcode) [nil nil outputs]
+         (let [params (->> program (drop (inc idx))
                            (split-at (count modes))
                            first
                            (map parse-int))
@@ -57,19 +59,23 @@
                            "01" (assoc program output (apply + (butlast values)))
                            "02" (assoc program output (apply * (butlast values)))
                            "03" (assoc program output input)
-                           "04" (do (println (last values)) program)
-                           nil)]
-           [next-prog next-idx])))))
+                           program)
+               next-outputs (case opcode
+                              "04" (conj outputs (last values))
+                              outputs)]
+           [next-prog next-idx next-outputs])))))
 
 (defn part1
   "After providing 1 to the only input instruction and passing all the tests,
   what diagnostic code does the program produce?"
   [initial-program]
-  (loop [program initial-program idx 0]
-    (let [[p i] (calc program idx)]
+  (loop [program initial-program
+         idx 0
+         outputs []]
+    (let [[p i o] (calc program idx outputs)]
       (if p
-        (recur p (+ idx i))
-        p))))
+        (recur p (+ idx i) o)
+        (last o)))))
 
 (defn part2 [input] nil)
 
@@ -77,5 +83,3 @@
   (let [input (->> "day05.txt" get-input first (#(clojure.string/split % #",")) vec)]
     (time (println "Day 05, Part 1:" (part1 input)))
     #_(time (println "Day 05, Part 2:" (part2 input)))))
-
-(-main)

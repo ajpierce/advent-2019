@@ -3,11 +3,6 @@
   (:require [clojure.string :as s]
             [advent-2019.core :refer [get-input parse-int]]))
 
-(defn num-params [opcode]
-  (cond (= "03" opcode) 1
-        (= "04" opcode) 1
-        :else 3))
-
 (def flipjoin
   "Reverse elements in a seq, and join them as a string"
   (comp #(s/join "" %) reverse))
@@ -16,6 +11,13 @@
   "Pads coll to length n with v"
   [n v coll]
   (take n (concat coll (repeat v))))
+
+(defn num-params [opcode]
+  (cond (= "03" opcode) 1
+        (= "04" opcode) 1
+        (= "05" opcode) 2
+        (= "06" opcode) 2
+        :else 3))
 
 (defn parse-instruction
   "Given an instruction, will return [opcode modes] with proper padding.
@@ -29,7 +31,9 @@
         modes (->> raw-modes reverse (take padding) (s/join ""))]
     [opcode modes]))
 
-(defn get-val [program [idx mode]]
+(defn get-val
+  "Handles position vs immediate mode for parameters"
+  [program [idx mode]]
   (if (= \1 mode)
     idx
     (parse-int (nth program (int idx)))))
@@ -52,13 +56,25 @@
                            (split-at (count modes))
                            first
                            (map parse-int))
-               values (map #(get-val program %) (partition 2 (interleave params modes)))
+               values (->> modes (interleave params)
+                           (partition 2)
+                           (map #(get-val program %)))
                output (last params)
-               next-idx (inc (count modes))
+               next-idx (cond (and (= "05" opcode)
+                                   (not (zero? (first values)))) (second values)
+                              (and (= "06" opcode)
+                                   (zero? (first values))) (second values)
+                              :else (+ idx (inc (count modes))))
                next-prog (case opcode
                            "01" (assoc program output (apply + (butlast values)))
                            "02" (assoc program output (apply * (butlast values)))
                            "03" (assoc program output input)
+                           "07" (if (< (first values) (second values))
+                                  (assoc program output 1)
+                                  (assoc program output 0))
+                           "08" (if (= (first values) (second values))
+                                  (assoc program output 1)
+                                  (assoc program output 0))
                            program)
                next-outputs (case opcode
                               "04" (conj outputs (last values))
@@ -69,7 +85,7 @@
   "Executes the program until a stop code (99) is reached.
   Returns the last value on the output stack"
   ([initial-program]
-   (run 1))
+   (run initial-program 1))
   ([initial-program input]
    (loop [program initial-program
           idx 0

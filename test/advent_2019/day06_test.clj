@@ -18,9 +18,7 @@
     (is (= '(:B :C) (split-to-keywords "B)C"))))
 
   (testing "Parsing Orbit Data"
-    (is (= {:COM '(:B), :B '(:G :C),
-            :C '(:D), :D '(:I :E), :E '(:J :F),
-            :G '(:H), :J '(:K), :K '(:L)}
+    (is (= {:COM #{:B} :B #{:G :C} :C #{:D} :D #{:I :E} :E #{:J :F} :G #{:H} :J #{:K} :K #{:L}}
            (->> raw-orbit-data get-pairs build-orbit-map))))
 
   (testing "Getting bodies"

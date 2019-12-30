@@ -14,9 +14,11 @@
 
 (defn build-orbit-map
   "Given a seq of keyword pairs seqs,
-  Builds a map whose values are bodies orbiting each key"
+  Builds a map whose values are a set of bodies orbiting each key"
   [orbit-pairs]
-  (reduce into-map {} orbit-pairs))
+  (->> (reduce into-map {} orbit-pairs)
+       (reduce-kv #(assoc %1 %2 (into #{} %3)) {})))
+
 
 (defn get-bodies
   "For a given center of mass, see if it has any bodies orbiting it

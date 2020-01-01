@@ -1,6 +1,7 @@
 (ns advent-2019.intcode
   (:gen-class)
-  (:require [clojure.string :as s]
+  (:require [clojure.core.async :refer [<!! onto-chan chan]]
+            [clojure.string :as s]
             [advent-2019.core :refer [parse-int]]))
 
 (def flipjoin
@@ -48,7 +49,7 @@
    (calc program idx [] '(1)))
   ([program idx outputs]
    (calc program idx outputs '(1)))
-  ([program idx outputs inputs]
+  ([program idx outputs input-channel]
    (let [instruction (first (drop idx program))
          [opcode modes] (parse-instruction instruction)]
      (if (= "99" opcode) [nil nil outputs]
@@ -68,7 +69,7 @@
                next-prog (case opcode
                            "01" (assoc program output (apply + (butlast values)))
                            "02" (assoc program output (apply * (butlast values)))
-                           "03" (assoc program output (peek inputs))
+                           "03" (assoc program output (<!! input-channel))
                            "07" (if (< (first values) (second values))
                                   (assoc program output 1)
                                   (assoc program output 0))
@@ -78,9 +79,17 @@
                            program)
                next-outputs (case opcode
                               "04" (conj outputs (last values))
-                              outputs)
-               next-inputs (if (= "03" opcode) (pop inputs) inputs)]
-           [next-prog next-idx next-outputs next-inputs])))))
+                              outputs)]
+           [next-prog next-idx next-outputs input-channel])))))
+
+(defn input-to-chan
+  "Takes input and coerces it into a chan if it's not one already"
+  [input]
+  (if (instance? clojure.core.async.impl.channels.ManyToManyChannel input)
+    input ;; Already a chan, just return it
+    (let [input-coll (if (coll? input) input (list input))
+          c (chan (count input-coll))]
+      (do (onto-chan c input-coll false) c))))
 
 (defn run
   "Executes the program until a stop code (99) is reached.
@@ -91,8 +100,8 @@
    (loop [program initial-program
           idx 0
           outputs []
-          inputs (if-not (seq? input-values) (list input-values) input-values)]
-     (let [[p i o ri] (calc program idx outputs inputs)]
+          in-chan (input-to-chan input-values)]
+     (let [[p i o ic] (calc program idx outputs in-chan)]
        (if p
-         (recur p i o ri)
+         (recur p i o ic)
          (last o))))))

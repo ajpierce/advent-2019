@@ -1,8 +1,8 @@
-(ns advent-2019.day05-test
+(ns advent-2019.intcode-test
   (:require [clojure.test :refer [deftest testing is]]
-            [advent-2019.day05 :refer [calc parse-instruction run]]))
+            [advent-2019.intcode :refer [calc parse-instruction run]]))
 
-(deftest day05
+(deftest intcode-tests
   (testing "instruction parsing"
     (is (= ["02" "000"] (parse-instruction 2)))
     (is (= ["01" "100"] (parse-instruction 101)))

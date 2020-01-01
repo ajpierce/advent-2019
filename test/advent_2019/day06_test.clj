@@ -22,13 +22,13 @@
            (->> raw-orbit-data get-pairs build-orbit-map))))
 
   (testing "Getting bodies"
-    (is (= '(:G :C) (get-bodies orbit-map :B)))
+    (is (= #{:G :C} (get-bodies orbit-map :B)))
     (is (= :L (get-bodies orbit-map :L))))
 
   (testing "Building orbit tree"
-    (is (= '(:COM (:B (:G (:H)) (:C (:D (:I) (:E (:J (:K (:L))) (:F))))))
+    (is (= '(:COM (:B (:C (:D (:I) (:E (:F) (:J (:K (:L)))))) (:G (:H))))
            (build-orbit-tree :COM orbit-map)))
-    (is (= '(:E (:J (:K (:L))) (:F)) (build-orbit-tree :E orbit-map)))
+    (is (= '(:E (:F) (:J (:K (:L)))) (build-orbit-tree :E orbit-map)))
     nil)
 
   (testing "Counting orbits"

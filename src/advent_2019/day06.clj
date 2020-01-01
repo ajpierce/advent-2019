@@ -19,7 +19,6 @@
   (->> (reduce into-map {} orbit-pairs)
        (reduce-kv #(assoc %1 %2 (into #{} %3)) {})))
 
-
 (defn get-bodies
   "For a given center of mass, see if it has any bodies orbiting it
   If yes, return the bodies. If not, return the center of mass (itself)"
@@ -29,7 +28,7 @@
   "Build a tree of the orbit map beginning with cneter of mass com"
   [com orbit-map]
   (let [bodies (get-bodies orbit-map com)]
-    (if (seq? bodies)
+    (if (set? bodies)
       (conj (map #(build-orbit-tree % orbit-map) bodies) com)
       (list bodies))))
 

@@ -4,6 +4,7 @@
   :license {:name "MIT"
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/math.combinatorics "0.1.6"]
                  [com.taoensso/tufte "2.1.0"]]
   :global-vars {*warn-on-reflection* true}
   :profiles {:uberjar {:aot :all}
@@ -21,5 +22,11 @@
                      :aot :all}
              :day05 {:main advent-2019.day05
                      :uberjar-name "advent2019-day05.jar"
+                     :aot :all}
+             :day06 {:main advent-2019.day06
+                     :uberjar-name "advent2019-day06.jar"
+                     :aot :all}
+             :day07 {:main advent-2019.day07
+                     :uberjar-name "advent2019-day07.jar"
                      :aot :all}}
   :repl-options {:init-ns advent-2019.core})

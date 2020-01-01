@@ -1,6 +1,6 @@
 (ns advent-2019.intcode
   (:gen-class)
-  (:require [clojure.core.async :refer [<!! onto-chan chan]]
+  (:require [clojure.core.async :refer [>!! <!! onto-chan chan sliding-buffer]]
             [clojure.string :as s]
             [advent-2019.core :refer [parse-int]]))
 
@@ -46,13 +46,13 @@
   ([program]
    (calc program 0 [] '(1)))
   ([program idx]
-   (calc program idx [] '(1)))
-  ([program idx outputs]
-   (calc program idx outputs '(1)))
-  ([program idx outputs input-channel]
+   (calc program idx (chan (sliding-buffer 1)) '(1)))
+  ([program idx output-chan]
+   (calc program idx output-chan '(1)))
+  ([program idx output-chan input-channel]
    (let [instruction (first (drop idx program))
          [opcode modes] (parse-instruction instruction)]
-     (if (= "99" opcode) [nil nil outputs]
+     (if (= "99" opcode) [nil nil output-chan]
          (let [params (->> program (drop (inc idx))
                            (split-at (count modes))
                            first
@@ -77,10 +77,9 @@
                                   (assoc program output 1)
                                   (assoc program output 0))
                            program)
-               next-outputs (case opcode
-                              "04" (conj outputs (last values))
-                              outputs)]
-           [next-prog next-idx next-outputs input-channel])))))
+               oc (do (when (= "04" opcode) (>!! output-chan (last values)))
+                      output-chan)]
+           [next-prog next-idx oc input-channel])))))
 
 (defn input-to-chan
   "Takes input and coerces it into a chan if it's not one already"
@@ -99,9 +98,9 @@
   ([initial-program input-values]
    (loop [program initial-program
           idx 0
-          outputs []
+          out-chan (chan (sliding-buffer 1))
           in-chan (input-to-chan input-values)]
-     (let [[p i o ic] (calc program idx outputs in-chan)]
+     (let [[p i o ic] (calc program idx out-chan in-chan)]
        (if p
          (recur p i o ic)
-         (last o))))))
+         (<!! o))))))

@@ -62,7 +62,36 @@
        (build-orbit-tree :COM)
        count-orbits))
 
+(defn get-parent [omap node]
+  (->> omap (filter (fn [[_ v]] (contains? v node))) keys first))
+
+(defn get-common-ancestor
+  "Given two nodes and an orbial map, return the first common anestor
+  and the distance to that ancestor from each node"
+  [node1 node2 omap]
+  (loop [n1 node1 n2 node2 s1 {node1 0} s2 {node2 0}]
+    (cond (contains? s2 n1) [n1 (get s1 n1) (get s2 n1)]
+          (contains? s1 n2) [n2 (get s1 n2) (get s2 n2)]
+          (and (nil? n1) (nil? n2)) nil
+          :else
+          (let [next1 (get-parent omap n1)
+                next2 (get-parent omap n2)]
+            (recur next1 next2
+                   (assoc s1 next1 (dec (count s1)))
+                   (assoc s2 next2 (dec (count s2))))))))
+
+(defn part2
+  "What is the minimum number of orbital transfers required to move
+  from the object YOU are orbiting to the object SAN is orbiting?"
+  [input]
+  (->> input
+       get-pairs
+       build-orbit-map
+       (get-common-ancestor :YOU :SAN)
+       rest
+       (reduce +)))
+
 (defn -main []
   (let [input (->> "day06.txt" get-input)]
     (time (println "Day 06, Part 1:" (part1 input)))
-    #_(time (println "Day 06, Part 2:" (part2 input)))))
+    (time (println "Day 06, Part 2:" (part2 input)))))

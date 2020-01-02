@@ -1,6 +1,6 @@
 (ns advent-2019.intcode
   (:gen-class)
-  (:require [clojure.core.async :refer [>!! <!! onto-chan chan sliding-buffer]]
+  (:require [clojure.core.async :refer [>!! <!! >! onto-chan chan go sliding-buffer]]
             [clojure.string :as s]
             [advent-2019.core :refer [parse-int]]))
 
@@ -44,42 +44,45 @@
   Return a vector of [next-program, next-index, next-outputs] if incomplete,
   or the outputs if complete."
   ([program]
-   (calc program 0 [] '(1)))
+   (calc program 0))
   ([program idx]
-   (calc program idx (chan (sliding-buffer 1)) '(1)))
-  ([program idx output-chan]
-   (calc program idx output-chan '(1)))
-  ([program idx output-chan input-channel]
+   (calc program idx (let [in-chan (chan 1)] (>!! 1) in-chan)))
+  ([program idx in-chan]
+   (calc program idx in-chan (chan (sliding-buffer 1))))
+  ([program idx in-chan out-chan]
+   (calc program idx in-chan out-chan :default))
+  ([program idx in-chan out-chan id]
    (let [instruction (first (drop idx program))
          [opcode modes] (parse-instruction instruction)]
-     (if (= "99" opcode) [nil nil output-chan]
-         (let [params (->> program (drop (inc idx))
-                           (split-at (count modes))
-                           first
-                           (map parse-int))
-               values (->> modes (interleave params)
-                           (partition 2)
-                           (map #(get-val program %)))
-               output (last params)
-               next-idx (cond (and (= "05" opcode)
-                                   (not (zero? (first values)))) (second values)
-                              (and (= "06" opcode)
-                                   (zero? (first values))) (second values)
-                              :else (+ idx (inc (count modes))))
-               next-prog (case opcode
-                           "01" (assoc program output (apply + (butlast values)))
-                           "02" (assoc program output (apply * (butlast values)))
-                           "03" (assoc program output (<!! input-channel))
-                           "07" (if (< (first values) (second values))
-                                  (assoc program output 1)
-                                  (assoc program output 0))
-                           "08" (if (= (first values) (second values))
-                                  (assoc program output 1)
-                                  (assoc program output 0))
-                           program)
-               oc (do (when (= "04" opcode) (>!! output-chan (last values)))
-                      output-chan)]
-           [next-prog next-idx oc input-channel])))))
+     (if (= "99" opcode)
+       [nil nil] ;; <== Terminate the prgram; it is complete
+       (let [params (->> program (drop (inc idx))
+                         (split-at (count modes))
+                         first
+                         (map parse-int))
+             values (->> modes (interleave params)
+                         (partition 2)
+                         (map #(get-val program %)))
+             output (last params)
+             next-idx (cond (and (= "05" opcode)
+                                 (not (zero? (first values)))) (second values)
+                            (and (= "06" opcode)
+                                 (zero? (first values))) (second values)
+                            :else (+ idx (inc (count modes))))
+             next-prog (case opcode
+                         "01" (assoc program output (apply + (butlast values)))
+                         "02" (assoc program output (apply * (butlast values)))
+                         "03" (assoc program output (do (println "reading from input channel" id)
+                                                        (<!! in-chan)))
+                         "07" (if (< (first values) (second values))
+                                (assoc program output 1)
+                                (assoc program output 0))
+                         "08" (if (= (first values) (second values))
+                                (assoc program output 1)
+                                (assoc program output 0))
+                         program)]
+         (when (= "04" opcode) (go (>! out-chan (last values))))
+         [next-prog next-idx])))))
 
 (defn input-to-chan
   "Takes input and coerces it into a chan if it's not one already"
@@ -96,11 +99,17 @@
   ([initial-program]
    (run initial-program '(1)))
   ([initial-program input-values]
-   (loop [program initial-program
-          idx 0
-          out-chan (chan (sliding-buffer 1))
-          in-chan (input-to-chan input-values)]
-     (let [[p i o ic] (calc program idx out-chan in-chan)]
-       (if p
-         (recur p i o ic)
-         (<!! o))))))
+   (run initial-program input-values (chan (sliding-buffer 1))))
+  ([initial-program input-values out-chan]
+   (run initial-program input-values out-chan identity))
+  ([initial-program input-values out-chan callback]
+   (run initial-program input-values out-chan callback :default))
+  ([initial-program input-values out-chan callback id]
+   (let [in-chan (input-to-chan input-values)]
+     (loop [program initial-program
+            idx 0]
+       (let [[p i] (calc program idx in-chan out-chan id)]
+         (if p
+           (recur p i)
+           (do (println "Program" id "is complete; popping output off the channel")
+               (callback (<!! out-chan)))))))))

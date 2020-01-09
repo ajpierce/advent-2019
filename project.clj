@@ -7,6 +7,7 @@
                  [org.clojure/core.async "0.6.532"]
                  [org.clojure/math.combinatorics "0.1.6"]
                  [com.taoensso/tufte "2.1.0"]]
+  :plugins [[io.taylorwood/lein-native-image "0.3.0"]]
   :global-vars {*warn-on-reflection* true}
   :profiles {:uberjar {:aot :all}
              :day01 {:main advent-2019.day01
@@ -30,4 +31,17 @@
              :day07 {:main advent-2019.day07
                      :uberjar-name "advent2019-day07.jar"
                      :aot :all}}
-  :repl-options {:init-ns advent-2019.core})
+  :repl-options {:init-ns advent-2019.core}
+  :main advent-2019.day01
+  :native-image {:name     "day01"
+                 :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
+                 :opts     ["--report-unsupported-elements-at-runtime"
+                            "--initialize-at-build-time"
+                            "--allow-incomplete-classpath"
+                            ;;avoid spawning build server
+                            "--no-server"
+                            "-H:ConfigurationResourceRoots=resources"
+                            ~(str "-H:ResourceConfigurationFiles="
+                               (System/getProperty "user.dir")
+                               (java.io.File/separator)
+                               "resource-config.json")]})

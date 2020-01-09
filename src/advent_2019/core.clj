@@ -35,8 +35,8 @@
   ([filename]
    (get-input filename false))
   ([filename parseInt?]
-   (let [raw-input (-> (str "resources/" filename)
-                       (clojure.java.io/reader)
+   (let [raw-input (-> filename
+                       (clojure.java.io/resource)
                        (slurp)
                        (clojure.string/split-lines))]
      (if parseInt?
